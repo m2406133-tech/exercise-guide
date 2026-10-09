@@ -93,7 +93,8 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
 .pick { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); align-items: center; gap: 12px; width: 100%; text-align: left; background: none; border: 0; padding: 12px 4px; }
 .side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-right: 4px; }
 .reps { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
-.reps select { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; min-height: 34px; cursor: pointer; }
+.reps input { width: 3em; text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 0.95rem; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; min-height: 34px; }
+.reps .max { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
 .item:hover { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
 .item .idx { font-family: var(--font-num); font-weight: 600; font-size: 0.95rem; color: var(--muted); width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); }
 .item.current .idx { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
@@ -324,17 +325,27 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
   function repPicker(g) {
     const wrap = el("label", "reps");
     if (g.repEnds.length > 1) wrap.append(el("span", null, "방향마다"));  // 라마·개미핥기, 눈 13·14번: 방향마다 같은 횟수
-    const sel = el("select");
-    sel.id = `reps-${g.gk}-${g.id}`;
-    sel.setAttribute("aria-label", `${g.name} 횟수`);
-    for (let n = 1; n <= maxReps(g); n++) { const o = el("option", null, `${n}회`); o.value = String(n); sel.append(o); }
-    sel.value = String(target(g));
-    sel.addEventListener("change", () => {
-      repPref[g.gk][g.id] = Number(sel.value);
-      store.set("reps", JSON.stringify(repPref));
+    const input = el("input");
+    input.id = `reps-${g.gk}-${g.id}`;
+    input.type = "text";  // number는 마우스 휠로 값이 바뀌어서 text + 숫자 키패드로
+    input.inputMode = "numeric";
+    input.pattern = "[0-9]*";
+    input.maxLength = 2;
+    input.setAttribute("aria-label", `${g.name} 횟수 (1~${maxReps(g)})`);
+    input.value = String(target(g));
+    input.addEventListener("focus", () => input.select());
+    input.addEventListener("keydown", e => { if (e.key === "Enter") input.blur(); });
+    // 입력을 마치면(다른 곳을 누르거나 Enter) 1~최대 안으로 맞춰 저장한다. 비우거나 숫자가 아니면 원래 값으로
+    input.addEventListener("change", () => {
+      const n = parseInt(input.value, 10);
+      if (n > 0) {
+        repPref[g.gk][g.id] = Math.min(n, maxReps(g));
+        store.set("reps", JSON.stringify(repPref));
+      }
+      input.value = String(target(g));
       renderList(); renderPlayer();
     });
-    wrap.append(sel);
+    wrap.append(input, el("span", "max", `/ ${maxReps(g)}회`));
     return wrap;
   }
 
@@ -390,7 +401,9 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
 
   function renderList() {
     if (view === "log") return;
+    if (document.activeElement && document.activeElement.matches(".reps input")) return;  // 횟수를 입력하는 중에는 칸을 다시 그리지 않는다 (입력을 마치면 그린다)
     const list = $("list"), gs = guides[view];
+    const focusId = list.contains(document.activeElement) ? document.activeElement.id : "";  // 다시 그린 뒤 포커스를 되돌린다
     list.replaceChildren();
     if (!gs.length) return;
     const t = todayInfo();
@@ -399,6 +412,7 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
       const li = el("li", "item" + (playing ? " current" : ""));
       const b = el("button", "pick");
       b.type = "button";
+      b.id = `pick-${g.gk}-${g.id}`;
       b.append(el("span", "idx", pad(g.n)));
       const mid = el("span");
       mid.append(el("span", "name", g.name));
@@ -421,6 +435,7 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
       li.append(b, side);
       list.append(li);
     }
+    if (focusId && $(focusId)) $(focusId).focus();
     const total = gs.reduce((a, g) => a + planDur(g), 0);
     $("routineSum").textContent = `${GUIDE_NAME[view]} ${gs.length}가지 · 모두 하면 ${Math.round(total / 60)}분`;
     const next = gs.findIndex(g => !t.done.has(`${g.gk}:${g.id}`));
@@ -753,6 +768,7 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
   $("pAuto").checked = store.get("autoNext") !== "0";
   $("pAuto").addEventListener("change", () => store.set("autoNext", $("pAuto").checked ? "1" : "0"));
   $("btnResume").addEventListener("click", () => start(view, Number($("btnResume").dataset.idx || 0)));
+  $("list").addEventListener("focusout", e => { if (e.target.matches(".reps input")) setTimeout(renderList); });  // 횟수 칸에서 빠져나오면 시간·상태를 다시 그린다
 
   for (const b of document.querySelectorAll(".tabs button")) {
     b.addEventListener("click", () => { view = b.dataset.view; store.set("tab", view); renderTabs(); renderList(); });
