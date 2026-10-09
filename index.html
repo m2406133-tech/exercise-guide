@@ -57,16 +57,18 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
 /* 머리글: 이름 + 계정 */
 .top { display: flex; flex-direction: column; gap: 14px; }
-.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
-.who { display: flex; align-items: baseline; gap: 10px; font-size: 0.85rem; color: var(--muted); min-width: 0; }
-.who b { color: var(--fg); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12em; }
+/* 제목과 계정은 늘 한 줄: 이름이 길면 이름만 말줄임 */
+.head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; flex: none; }
+.who { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; min-width: 0; }
+.who b { color: var(--fg); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.who .link-btn, .head > .link-btn { flex: none; white-space: nowrap; }
 .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.stat { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stat { padding: 8px 12px; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .stat + .stat { border-left: 1px solid var(--line); }
-.stat .val { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 1.45rem; font-weight: 600; line-height: 1.2; }
-.stat .val small { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-left: 2px; }
-.stat .lbl { font-size: 0.78rem; color: var(--muted); }
+.stat .val { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 1.1rem; font-weight: 600; line-height: 1.2; }
+.stat .val small { font-size: 0.72rem; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.stat .lbl { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .notice { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); font-size: 0.88rem; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .notice.warn { background: transparent; border: 1px solid var(--stop); color: var(--fg); }
 .notice .url { font-family: var(--font-num); font-size: 0.8rem; word-break: break-all; user-select: all; }
@@ -241,7 +243,14 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; t
 (() => {
   // Firebase 콘솔 → 프로젝트 설정 → 내 앱 → firebaseConfig. 웹페이지에 공개되는 값이다 (남의 기록을 못 보게 막는 건 firestore.rules).
   // null이면 화면 확인용으로 기록을 이 탭 메모리에만 둔다.
-  const FIREBASE_CONFIG = null;
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCOlDJr4hnkL7TREjfiAXpO74HsHZJdGBY",
+    authDomain: "exercise-guide-3783b.firebaseapp.com",
+    projectId: "exercise-guide-3783b",
+    storageBucket: "exercise-guide-3783b.firebasestorage.app",
+    messagingSenderId: "166410245894",
+    appId: "1:166410245894:web:5931a5517ce3381cccf087",
+  };
   const SDK = "https://www.gstatic.com/firebasejs/10.14.1/";
 
   // 카카오톡·라인 앱 안 브라우저는 Google 로그인을 막으므로 바깥 브라우저로 연다
