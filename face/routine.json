@@ -19,19 +19,19 @@
       "id": "llama",
       "name": "라마 - 입술로 원 그리기",
       "intro": "입술을 뽀뽀하듯 앞으로 내밀고, 입술로 크게 원을 그립니다. 먼저 한쪽 방향으로 돌립니다.",
-      "repetitions": 30,
+      "repetitions": 15,
       "count_aloud": true,
       "steps": [{"cue": "", "seconds": 2}],
       "parts": [
         {
           "intro": "반대 방향으로 돌립니다.",
-          "repetitions": 30,
+          "repetitions": 15,
           "count_aloud": true,
           "steps": [{"cue": "", "seconds": 2}]
         },
         {
           "intro": "더 안 돌아가던 쪽이 있으면, 그쪽으로 한 번 더 돌립니다.",
-          "repetitions": 30,
+          "repetitions": 15,
           "count_aloud": true,
           "steps": [{"cue": "", "seconds": 2}],
           "outro": {"cue": "입술 풀고 쉬세요.", "seconds": 3}
@@ -42,14 +42,14 @@
       "id": "anteater",
       "name": "개미핥기 - 입 안에서 혀 돌리기",
       "intro": "입술을 다문 채, 입 안에서 혀로 잇몸 바깥쪽을 따라 크게 원을 그립니다. 팔자주름 자리를 지날 때 혀로 조금 더 눌러 주세요. 먼저 한쪽 방향으로 돌립니다.",
-      "repetitions": 30,
+      "repetitions": 15,
       "count_aloud": true,
       "steps": [{"cue": "", "seconds": 2}],
       "outro": {"cue": "숨 고르세요.", "seconds": 5},
       "parts": [
         {
           "intro": "반대 방향으로 돌립니다.",
-          "repetitions": 30,
+          "repetitions": 15,
           "count_aloud": true,
           "steps": [{"cue": "", "seconds": 2}],
           "outro": {"cue": "혀 풀고 쉬세요.", "seconds": 3}
