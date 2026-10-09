@@ -1,0 +1,103 @@
+{
+  "title": "얼굴운동",
+  "announce_name": true,
+  "voice": "ko-KR-SunHiNeural",
+  "rate": "-5%",
+  "pause_after_intro": 2,
+  "closing": "끝.",
+  "exercises": [
+    {
+      "id": "duck",
+      "name": "오리 - 입술 내밀고 위아래로 열기",
+      "intro": "입술을 오리처럼 앞으로 내미세요. 그 상태로 입을 위아래로 길게 열었다 닫습니다. 옆으로 오므리지 말고, 위아래로 길게 엽니다. 숫자에 맞춰 합니다.",
+      "repetitions": 30,
+      "count_aloud": true,
+      "steps": [{"cue": "", "seconds": 2}],
+      "outro": {"cue": "입술 풀고 쉬세요.", "seconds": 3}
+    },
+    {
+      "id": "llama",
+      "name": "라마 - 입술로 원 그리기",
+      "intro": "입술을 뽀뽀하듯 앞으로 내밀고, 입술로 크게 원을 그립니다. 먼저 한쪽 방향으로 돌립니다.",
+      "repetitions": 30,
+      "count_aloud": true,
+      "steps": [{"cue": "", "seconds": 2}],
+      "parts": [
+        {
+          "intro": "반대 방향으로 돌립니다.",
+          "repetitions": 30,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}]
+        },
+        {
+          "intro": "더 안 돌아가던 쪽이 있으면, 그쪽으로 한 번 더 돌립니다.",
+          "repetitions": 30,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}],
+          "outro": {"cue": "입술 풀고 쉬세요.", "seconds": 3}
+        }
+      ]
+    },
+    {
+      "id": "anteater",
+      "name": "개미핥기 - 입 안에서 혀 돌리기",
+      "intro": "입술을 다문 채, 입 안에서 혀로 잇몸 바깥쪽을 따라 크게 원을 그립니다. 팔자주름 자리를 지날 때 혀로 조금 더 눌러 주세요. 먼저 한쪽 방향으로 돌립니다.",
+      "repetitions": 30,
+      "count_aloud": true,
+      "steps": [{"cue": "", "seconds": 2}],
+      "outro": {"cue": "숨 고르세요.", "seconds": 5},
+      "parts": [
+        {
+          "intro": "반대 방향으로 돌립니다.",
+          "repetitions": 30,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}],
+          "outro": {"cue": "혀 풀고 쉬세요.", "seconds": 3}
+        }
+      ]
+    },
+    {
+      "id": "hippo",
+      "name": "하마 - 혀 붙이고 입 벌리기",
+      "intro": "혀끝을 윗니 바로 뒤 입천장에 붙이세요. 혀를 떼지 않은 채로, 하품하듯 입을 크게 벌렸다 닫습니다.",
+      "repetitions": 30,
+      "count_aloud": true,
+      "steps": [{"cue": "", "seconds": 2}],
+      "outro": {"cue": "입 다물고 쉬세요.", "seconds": 3}
+    },
+    {
+      "id": "pufferfish",
+      "name": "복어 - 양 볼에 바람 넣기",
+      "intro": "양 볼에 바람을 가득 넣고 오 초 버팁니다. 혈압이 높은 분은 힘을 빼고 가볍게 하세요.",
+      "repetitions": 10,
+      "count_aloud": true,
+      "steps": [
+        {"cue": "바람 넣고.", "short_cue": "", "seconds": 5},
+        {"cue": "후, 내쉬세요.", "short_cue": "후", "seconds": 2}
+      ],
+      "outro": {"cue": "쉬세요.", "seconds": 3}
+    },
+    {
+      "id": "quokka",
+      "name": "쿼카 - 입술 숨기고 입꼬리 올리기",
+      "intro": "입술을 안으로 말아 물어서 이를 숨기세요. 그 상태에서 광대만 써서 입꼬리를 올렸다 내립니다. 잘 안 되면 입술을 살짝 띄우고 양옆으로 벌린다고 생각하세요.",
+      "repetitions": 50,
+      "count_aloud": true,
+      "steps": [{"cue": "", "seconds": 2}],
+      "break": {"every": 25, "cue": "입술이 풀렸으면 다시 숨기세요.", "seconds": 2},
+      "outro": {"cue": "입술 풀고 쉬세요.", "seconds": 3}
+    },
+    {
+      "id": "cow",
+      "name": "소 - 목 앞쪽 늘리기",
+      "intro": "입술을 뽀뽀하듯 내미세요. 두 손을 모아 가슴 가운데 뼈를 누르고, 아래로 살짝 당깁니다. 그대로 고개를 앞으로 물결치듯 젖혀 목 앞쪽을 늘리고 오 초 버팁니다. 목 뒤가 아니라 목 앞쪽이 당겨야 합니다.",
+      "repetitions": 10,
+      "count_aloud": true,
+      "steps": [
+        {"cue": "누르고, 젖히고.", "short_cue": "젖히고", "seconds": 5},
+        {"cue": "고개 돌아오세요.", "short_cue": "돌아오고", "seconds": 2}
+      ],
+      "outro": {"cue": "손 내리고 쉬세요.", "seconds": 3}
+    }
+  ]
+}

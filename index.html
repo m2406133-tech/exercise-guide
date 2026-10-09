@@ -3,432 +3,781 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>동물 얼굴 운동</title>
-<meta name="description" content="오리·라마·개미핥기·하마·복어·쿼카·소. 손 안 대고 하는 얼굴·목 운동 음성 가이드와 운동 기록.">
+<title>눈·얼굴 운동 가이드</title>
+<meta name="description" content="정해진 속도로 안내하고 횟수를 세어 주는 눈운동·얼굴운동 음성 가이드. Google로 로그인하면 어느 기기에서든 내 기록이 남는다.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
-/* 한 줄 세로 흐름: 오늘 요약 → 루틴 목록 → 기록. 재생 중에는 아래에 플레이어 고정 */
+/* Layout: 휴대폰 한 손 조작 기준 한 칼럼. 위 = 계정·오늘 요약, 가운데 = 눈운동/얼굴운동/기록 탭, 아래 = 고정 재생 바.
+   색: 눈운동은 시력검사 듀오크롬의 초록, 얼굴운동은 예전 얼굴 가이드의 장미색. 빨강 = 끝내기. */
 :root {
-  --bg: #EDF1F4; --surface: #FFFFFF; --ink: #18222D; --muted: #5B6976; --line: #D5DDE3;
-  --accent: #C2405A; --accent-ink: #FFFFFF; --done: #23805D;
-  --h0: #DDE4E9; --h1: #F1C2CB; --h2: #E07B91; --h3: #B5354F;
-  --display: "Do Hyeon", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --bg: #eef3f0;
+  --surface: #ffffff;
+  --fg: #16201c;
+  --muted: #5a6962;
+  --line: #d5dfda;
+  --eye: #1d7656; --eye-soft: #d8ece2;
+  --face: #b5354f; --face-soft: #f6dde3;
+  --accent: var(--eye); --accent-soft: var(--eye-soft);
+  --stop: #b93b34;
+  --on-accent: #ffffff;
+  --h0: #dde5e1; --h1: #b6d9c8; --h2: #66b48f; --h3: #1d7656;
+  --font-ui: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #11171D; --surface: #1A222A; --ink: #E5EBF0; --muted: #93A1AD; --line: #2A3540;
-    --accent: #EE7189; --accent-ink: #1A0E12; --done: #5CC49A;
-    --h0: #232D36; --h1: #5A2A35; --h2: #9C4458; --h3: #EE7189;
+    --bg: #0e1412; --surface: #161e1b; --fg: #e2eae6; --muted: #92a29a; --line: #26322d;
+    --eye: #5ec79c; --eye-soft: #1b3229;
+    --face: #ee7189; --face-soft: #3a1f27;
+    --stop: #f07a70; --on-accent: #0b1a13;
+    --h0: #1f2a26; --h1: #22503c; --h2: #3c8f69; --h3: #5ec79c;
     color-scheme: dark;
   }
 }
+body[data-guide="face"] { --accent: var(--face); --accent-soft: var(--face-soft); }
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); }
-button { font: inherit; color: inherit; }
-h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; text-wrap: balance; }
-
-.wrap {
-  max-width: 560px; margin: 0 auto; padding-inline: 16px;
-  padding-block: calc(24px + env(safe-area-inset-top, 0px)) 180px;
-  display: grid; gap: 32px;
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: calc(20px + env(safe-area-inset-top, 0px)) calc(var(--player-h, 0px) + 28px);
 }
-.eyebrow { margin: 0 0 2px; color: var(--muted); font-size: 13px; letter-spacing: .04em; }
-h1 { font-size: 40px; line-height: 1.1; }
-h2 { font-size: 24px; line-height: 1.2; }
-.sec { display: grid; gap: 12px; }
-.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.muted { color: var(--muted); font-size: 13px; }
+.app { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: default; opacity: 0.5; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
 
-/* 오늘 요약 */
-.stats {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-}
-.stat { padding: 14px 12px; display: grid; gap: 2px; min-width: 0; }
+/* 머리글: 이름 + 계정 */
+.top { display: flex; flex-direction: column; gap: 14px; }
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.who { display: flex; align-items: baseline; gap: 10px; font-size: 0.85rem; color: var(--muted); min-width: 0; }
+.who b { color: var(--fg); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12em; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.stat { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .stat + .stat { border-left: 1px solid var(--line); }
-.stat b { font: 30px/1 var(--display); font-weight: 400; font-variant-numeric: tabular-nums; }
-.stat b small { font-size: 15px; margin-left: 2px; color: var(--muted); }
-.stat span { font-size: 12px; color: var(--muted); }
-@media (max-width: 440px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .stat:nth-child(3) { border-left: 0; }
-  .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
-}
+.stat .val { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 1.45rem; font-weight: 600; line-height: 1.2; }
+.stat .val small { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-left: 2px; }
+.stat .lbl { font-size: 0.78rem; color: var(--muted); }
+.notice { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); font-size: 0.88rem; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.notice.warn { background: transparent; border: 1px solid var(--stop); color: var(--fg); }
+.notice .url { font-family: var(--font-num); font-size: 0.8rem; word-break: break-all; user-select: all; }
+.hint { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.hint p { margin: 0; }
+.hint .fine { font-size: 0.78rem; color: var(--muted); }
+.hint .primary { align-self: flex-start; }
 
-/* 버튼 */
-.primary {
-  border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink);
-  font: 20px/1 var(--display); padding: 16px; cursor: pointer; width: 100%;
-}
-.primary:disabled { opacity: .5; cursor: default; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* 탭 */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button { background: none; border: 0; padding: 8px 14px 10px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+.tabs .log-tab { margin-left: auto; }
 
-/* 운동 목록 */
-.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.item { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
-.item.is-current { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-.row {
-  all: unset; box-sizing: border-box; width: 100%; cursor: pointer;
-  display: grid; grid-template-columns: 1.6em minmax(0, 1fr) auto; gap: 12px; align-items: center;
-  padding: 14px 16px; border-radius: 14px;
-}
-.row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.num { font: 20px var(--display); color: var(--muted); }
-.animal { font: 24px/1.15 var(--display); display: block; }
-.action { color: var(--muted); font-size: 14px; display: block; }
-.meta { display: grid; justify-items: end; gap: 2px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.check { color: var(--done); font-weight: 600; font-size: 12px; }
-.intro { margin: 0; padding: 0 16px 16px calc(1.6em + 28px); font-size: 14px; }
-.err { padding: 16px; color: var(--muted); }
+/* 루틴 목록 */
+.routine-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.routine-head p { margin: 0; color: var(--muted); font-size: 0.85rem; }
+.primary { background: var(--accent); color: var(--on-accent); border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 600; }
+.primary.sm { padding: 6px 14px; font-size: 0.85rem; }
+.list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
+.pick { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); align-items: center; gap: 12px; width: 100%; text-align: left; background: none; border: 0; padding: 12px 4px; }
+.side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-right: 4px; }
+.reps { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+.reps select { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; min-height: 34px; cursor: pointer; }
+.item:hover { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.item .idx { font-family: var(--font-num); font-weight: 600; font-size: 0.95rem; color: var(--muted); width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); }
+.item.current .idx { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.item .name { font-weight: 600; display: block; }
+.item .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+.item .meta .num { font-size: 0.78rem; }
+.tag { border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; letter-spacing: 0.02em; }
+.status { font-size: 0.78rem; color: var(--muted); white-space: nowrap; text-align: right; }
+.status.done { color: var(--accent); font-weight: 600; }
+.status svg { vertical-align: -3px; }
 
-/* 기록: 히트맵 */
-.heat {
-  display: grid; grid-template-columns: 1.6em repeat(8, minmax(0, 34px));
-  gap: 4px; font-size: 11px; color: var(--muted);
-}
-.heat .lbl { align-self: center; white-space: nowrap; }
-.cell { aspect-ratio: 1; border-radius: 4px; background: var(--h0); max-width: 100%; }
-.cell.l1 { background: var(--h1); } .cell.l2 { background: var(--h2); } .cell.l3 { background: var(--h3); }
-.cell.future { background: transparent; }
-.cell.today { outline: 2px solid var(--ink); outline-offset: 1px; }
-.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); }
-.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+/* 기록 */
+.heat-box { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.heat-box h2 { margin: 0; font-size: 1rem; }
+.heat { display: grid; grid-template-columns: 1.8rem repeat(8, minmax(0, 1fr)); gap: 4px; max-width: 340px; font-size: 0.7rem; color: var(--muted); }
+.heat .lbl { line-height: 1; align-self: center; white-space: nowrap; }
+.heat .cell { aspect-ratio: 1; border-radius: 3px; background: var(--h0); }
+.heat .cell.l1 { background: var(--h1); }
+.heat .cell.l2 { background: var(--h2); }
+.heat .cell.l3 { background: var(--h3); }
+.heat .cell.today { outline: 2px solid var(--fg); outline-offset: -2px; }
+.heat .cell.future { background: transparent; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.75rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+.day { margin-top: 18px; }
+.day-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--fg); }
+.day-head h3 { margin: 0; font-size: 1rem; }
+.day-head span { font-size: 0.82rem; color: var(--muted); }
+.rows { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.row .time { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--muted); }
+.row .what { font-weight: 600; min-width: 0; }
+.row .what small { display: block; font-weight: 400; font-size: 0.8rem; color: var(--muted); }
+.row .what small b { font-weight: 600; color: var(--eye); }
+.row .what small b.face { color: var(--face); }
+.row .figs { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 0.85rem; white-space: nowrap; }
+.row .figs small { display: block; font-family: var(--font-ui); font-size: 0.75rem; color: var(--muted); }
+.row .figs small.done { color: var(--accent); font-weight: 600; }
+.empty { color: var(--muted); padding: 28px 4px; line-height: 1.7; }
+.empty strong { color: var(--fg); display: block; margin-bottom: 4px; }
 
-/* 기록: 날짜별 목록 */
-.days { display: grid; gap: 16px; }
-.day h3 { margin: 0 0 4px; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
-.day h3 span { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
-.day ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-.day li {
-  display: grid; grid-template-columns: 3.2em minmax(0, 1fr) auto auto; gap: 10px; align-items: center;
-  padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14px; font-variant-numeric: tabular-nums;
-}
-.day .time { color: var(--muted); }
-.chip { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 99px; border: 1px solid currentColor; }
-.chip.done { color: var(--done); }
-.chip.part { color: var(--muted); }
-.empty { margin: 0; color: var(--muted); font-size: 14px; }
+/* 재생 바 */
+.player { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 24px color-mix(in srgb, var(--fg) 10%, transparent); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.player-in { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.p-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.p-title { font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-title .num { color: var(--accent); margin-right: 6px; }
+.p-reps { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.p-reps small { font-family: var(--font-ui); color: var(--muted); font-weight: 500; }
+#pSeek { width: 100%; margin: 0; accent-color: var(--accent); }
+.p-time { display: flex; justify-content: space-between; font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 0.78rem; color: var(--muted); margin-top: -4px; }
+.p-ctrl { display: grid; grid-template-columns: 1fr auto auto auto 1fr; align-items: center; gap: 10px; }
+.icon-btn { background: none; border: 1px solid var(--line); border-radius: 50%; width: 44px; height: 44px; display: grid; place-items: center; }
+.icon-btn:disabled { opacity: 0.35; }
+.play { width: 58px; height: 58px; border: 0; background: var(--accent); color: var(--on-accent); }
+.stop { justify-self: end; background: none; border: 1px solid var(--stop); color: var(--stop); border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 0.88rem; }
+.p-opts { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.85rem; color: var(--muted); }
+.p-opts label { display: flex; align-items: center; gap: 6px; }
+.p-opts input { accent-color: var(--accent); width: 18px; height: 18px; }
+.link-btn { background: none; border: 0; padding: 4px 0; color: var(--accent); font-weight: 600; font-size: 0.85rem; }
+.p-intro { margin: 0; font-size: 0.88rem; line-height: 1.65; max-height: 32vh; overflow-y: auto; border-top: 1px solid var(--line); padding-top: 8px; }
+.toast { font-size: 0.82rem; color: var(--stop); margin: 0; }
 
-/* 하단 플레이어 */
-.player {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-  background: var(--surface); border-top: 1px solid var(--line);
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -8px 24px rgb(0 0 0 / .08);
+@media (prefers-reduced-motion: no-preference) {
+  .item, .tabs button { transition: background-color .15s, color .15s, border-color .15s; }
 }
-.player-in { max-width: 528px; margin: 0 auto; display: grid; gap: 6px; }
-.p-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.p-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.p-title b { font: 20px var(--display); font-weight: 400; margin-right: 6px; }
-.p-title span { color: var(--muted); font-size: 13px; }
-.p-time { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#seek { width: 100%; accent-color: var(--accent); margin: 0; }
-.p-ctl { display: flex; justify-content: center; align-items: center; gap: 20px; }
-.icon {
-  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line);
-  background: transparent; display: grid; place-items: center; cursor: pointer;
-}
-.icon.big { width: 54px; height: 54px; background: var(--accent); color: var(--accent-ink); border: 0; }
-.icon:disabled { opacity: .35; cursor: default; }
-.icon svg { width: 20px; height: 20px; fill: currentColor; }
-.p-mode { font-size: 12px; color: var(--muted); text-align: center; }
 </style>
 </head>
-<body>
-<main class="wrap">
-  <header>
-    <p class="eyebrow">손 안 대고 하는 얼굴·목 운동</p>
-    <h1>동물 얼굴 운동</h1>
+<body data-guide="eye">
+
+<div class="app">
+  <header class="top">
+    <div class="head">
+      <h1>눈·얼굴 운동 가이드</h1>
+      <div class="who" id="who" hidden><b id="whoName"></b><button class="link-btn" id="btnLogout">로그아웃</button></div>
+      <button class="link-btn" id="btnLoginTop" hidden>로그인</button>
+    </div>
+    <div class="stats" id="stats" aria-label="오늘 요약" hidden>
+      <div class="stat"><span class="val" id="stDone">0<small>개</small></span><span class="lbl">오늘 끝낸 운동</span></div>
+      <div class="stat"><span class="val" id="stTime">0<small>분</small></span><span class="lbl">오늘 운동 시간</span></div>
+      <div class="stat"><span class="val" id="stStreak">0<small>일</small></span><span class="lbl">연속 운동</span></div>
+    </div>
+    <section class="hint" id="loginHint" hidden>
+      <p><strong>로그인하면 기록이 남아요.</strong> 휴대폰이든 PC든 같은 Google 계정으로 들어오면 같은 기록이 보입니다. 로그인하지 않아도 운동은 그대로 할 수 있습니다.</p>
+      <button class="primary" id="btnLogin">Google로 로그인</button>
+      <p class="fine">Google 계정 이름과 운동 기록(운동 종류·횟수·시각·시간)이 저장되며, 앱 관리자는 기록을 볼 수 있습니다.</p>
+    </section>
+    <p class="notice warn" id="inapp" hidden>
+      <span>카카오톡·네이버처럼 앱 안에서 연 화면에서는 Google 로그인이 막혀 있습니다. 크롬이나 사파리에서 이 주소를 열어 주세요.</span>
+      <span class="url" id="inappUrl"></span>
+      <button class="link-btn" id="btnCopy">주소 복사</button>
+    </p>
+    <div class="notice" id="legacy" hidden>
+      <span id="legacyText"></span>
+      <button class="primary sm" id="legacyYes">가져오기</button>
+      <button class="link-btn" id="legacyNo">아니요</button>
+    </div>
+    <p class="notice" id="notice" hidden></p>
   </header>
 
-  <section class="sec" aria-labelledby="h-today">
-    <h2 id="h-today" hidden>오늘 요약</h2>
-    <div class="stats">
-      <div class="stat"><b id="sToday">0<small>분</small></b><span>오늘 운동</span></div>
-      <div class="stat"><b id="sDone">0<small>/7</small></b><span>오늘 완료</span></div>
-      <div class="stat"><b id="sStreak">0<small>일</small></b><span>연속 운동</span></div>
-      <div class="stat"><b id="sWeek">0<small>분</small></b><span>이번 주</span></div>
-    </div>
-  </section>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-eye" data-view="eye" aria-selected="true" aria-controls="viewRoutine">눈운동</button>
+    <button role="tab" id="tab-face" data-view="face" aria-selected="false" aria-controls="viewRoutine">얼굴운동</button>
+    <button role="tab" id="tab-log" data-view="log" class="log-tab" aria-selected="false" aria-controls="viewLog">기록</button>
+  </nav>
 
-  <section class="sec" aria-labelledby="h-routine">
-    <div class="sec-head"><h2 id="h-routine">루틴</h2><span id="total" class="muted"></span></div>
-    <button id="playAll" class="primary" disabled>전체 루틴 시작</button>
-    <ol id="list" class="list"></ol>
-  </section>
-
-  <section class="sec" aria-labelledby="h-log">
-    <div class="sec-head"><h2 id="h-log">운동 기록</h2><span class="muted">이 기기 브라우저에 저장됩니다</span></div>
-    <div id="heat" class="heat" role="img" aria-label="최근 8주 운동 달력"></div>
-    <div class="legend">
-      <span><i style="background:var(--h0)"></i>안 함</span>
-      <span><i style="background:var(--h1)"></i>5분 미만</span>
-      <span><i style="background:var(--h2)"></i>10분 미만</span>
-      <span><i style="background:var(--h3)"></i>10분 이상</span>
-    </div>
-    <div id="days" class="days"></div>
-    <p id="empty" class="empty">아직 기록이 없어요. 운동을 재생하면 자동으로 기록됩니다. 80% 이상 들으면 '완료', 10초 이상 들으면 '중단'으로 남아요.</p>
-  </section>
-</main>
-
-<div id="player" class="player" hidden>
-  <div class="player-in">
-    <div class="p-top">
-      <div class="p-title"><b id="pAnimal"></b><span id="pAction"></span></div>
-      <span id="pTime" class="p-time">0:00 / 0:00</span>
-    </div>
-    <input id="seek" type="range" min="0" max="1" step="0.1" value="0" aria-label="재생 위치">
-    <div class="p-ctl">
-      <button id="prev" class="icon" aria-label="이전 운동"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
-      <button id="toggle" class="icon big" aria-label="재생"></button>
-      <button id="next" class="icon" aria-label="다음 운동"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
-    </div>
-    <div id="pMode" class="p-mode"></div>
-  </div>
+  <main>
+    <section id="viewRoutine" role="tabpanel">
+      <div class="routine-head">
+        <p id="routineSum">운동 목록을 불러오는 중…</p>
+        <button class="primary" id="btnResume" hidden>시작하기</button>
+      </div>
+      <ol class="list" id="list"></ol>
+    </section>
+    <section id="viewLog" role="tabpanel" aria-labelledby="tab-log" hidden>
+      <div id="log"><p class="empty">기록을 불러오는 중…</p></div>
+    </section>
+  </main>
 </div>
 
+<div class="player" id="player" hidden>
+  <div class="player-in">
+    <div class="p-head">
+      <div class="p-title"><span class="num" id="pNum">01</span><span id="pName"></span></div>
+      <div class="p-reps" id="pReps"></div>
+    </div>
+    <input type="range" id="pSeek" min="0" max="1000" value="0" step="1" aria-label="재생 위치">
+    <div class="p-time"><span id="pCur">0:00</span><span id="pDur">0:00</span></div>
+    <div class="p-ctrl">
+      <span></span>
+      <button class="icon-btn" id="pPrev" aria-label="이전 운동"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z"/></svg></button>
+      <button class="icon-btn play" id="pPlay" aria-label="재생"><svg id="icoPlay" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg id="icoPause" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+      <button class="icon-btn" id="pNext" aria-label="다음 운동"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z"/></svg></button>
+      <button class="stop" id="pStop">끝내기</button>
+    </div>
+    <div class="p-opts">
+      <label for="pAuto"><input type="checkbox" id="pAuto" checked> 끝나면 다음 운동 이어서</label>
+      <button class="link-btn" id="pHow" aria-expanded="false" aria-controls="pIntro">방법 보기</button>
+    </div>
+    <p class="toast" id="pToast" hidden></p>
+    <p class="p-intro" id="pIntro" hidden></p>
+  </div>
+</div>
+<audio id="audio" preload="metadata"></audio>
+
 <script>
-const LOG_KEY = 'face-ex-log-v1', PENDING_KEY = 'face-ex-pending-v1';
-const MIN_SEC = 10;      // 이보다 짧게 들은 건 기록하지 않음
-const DONE_RATIO = 0.8;  // 이만큼 들어야 '완료'
-const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>';
-const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
-const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
+(() => {
+  // Firebase 콘솔 → 프로젝트 설정 → 내 앱 → firebaseConfig. 웹페이지에 공개되는 값이다 (남의 기록을 못 보게 막는 건 firestore.rules).
+  // null이면 화면 확인용으로 기록을 이 탭 메모리에만 둔다.
+  const FIREBASE_CONFIG = null;
+  const SDK = "https://www.gstatic.com/firebasejs/10.14.1/";
 
-const $ = s => document.querySelector(s);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
-const save = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-const dayKey = d => { const x = new Date(d); return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`; };
-const clock = s => { s = Math.floor(s || 0); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
-const human = s => s < 60 ? `${Math.round(s)}초` : `${Math.floor(s / 60)}분` + (Math.round(s % 60) ? ` ${Math.round(s % 60)}초` : '');
-// 큰 숫자 칸: 1분 미만이면 초로
-const bigNum = s => s > 0 && s < 60 ? [Math.round(s), '초'] : [Math.round(s / 60), '분'];
+  // 카카오톡·라인 앱 안 브라우저는 Google 로그인을 막으므로 바깥 브라우저로 연다
+  const ua = navigator.userAgent;
+  if (/KAKAOTALK/i.test(ua)) location.href = "kakaotalk://web/openExternal?url=" + encodeURIComponent(location.href);
+  else if (/ Line\//.test(ua) && !/openExternalBrowser=1/.test(location.search)) location.search += (location.search ? "&" : "?") + "openExternalBrowser=1";
+  const inApp = /KAKAOTALK| Line\/|NAVER\(inapp|Instagram|FBAN|FBAV|DaumApps|everytimeApp|; wv\)/i.test(ua);
 
-let ex = [];                       // routine.json의 운동 목록
-let log = load(LOG_KEY, []);       // [{t: 시작 ms, id, sec, done}]
-let cur = -1, routine = false;     // 현재 운동, 전체 루틴 모드 여부
-let session = null, lastPos = 0, lastSaved = 0;
-const audio = new Audio();
-audio.preload = 'auto';
+  const $ = id => document.getElementById(id);
+  const audio = $("audio");
+  const MIN_SAVE = 15;    // 초. 이보다 짧게 한 운동은 기록하지 않는다 (잘못 누른 것)
+  const CHECKPOINT = 30;  // 초. 하는 동안 이만큼마다 중간 저장 (창을 닫아도 기록이 남게)
+  const GUIDE_NAME = { eye: "눈운동", face: "얼굴운동" };
+  const TAGS = {
+    inner_corner_press: "풀기", orbital_rim_rub: "풀기",
+    slow_blink_far: "깜빡임", squeeze_blink: "깜빡임", fast_blink: "깜빡임",
+    eight_direction_gaze: "눈 움직임", thumb_pursuit: "눈 움직임",
+    near_convergence: "모으기", gaze_hold_head_turn: "고개",
+    far_mid_near: "초점", slow_thumb_blur_point: "초점", arm_pull_focus: "초점",
+    nail_far_switch: "초점", near_far_jump: "초점",
+    duck: "입술", llama: "입술", quokka: "입꼬리", anteater: "혀", hippo: "혀", pufferfish: "볼", cow: "목",
+  };
+  const FIXED = new Set(["fast_blink"]);  // 0.3초 간격 깜빡임은 세트 단위라 횟수를 바꾸지 않는다
+  const SKIP_LEAD = 0.15;  // 초. 다음 회 숫자가 새어 나오지 않게 회차 끝보다 조금 일찍 건너뛴다
+  const LEGACY_LOG = "face-ex-log-v1", LEGACY_PENDING = "face-ex-pending-v1";  // 예전 얼굴운동 페이지가 이 기기에 남긴 기록
+  const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
 
-// 지난번에 탭을 닫아 마무리 못 한 기록
-const leftover = load(PENDING_KEY, null);
-if (leftover) {
-  if (leftover.sec >= MIN_SEC) { log.push({ ...leftover, sec: Math.round(leftover.sec), done: false }); save(LOG_KEY, log); }
-  save(PENDING_KEY, null);
-}
+  let guides = { eye: [], face: [] };
+  let view = "eye";           // eye | face | log
+  let days = new Map();       // "2026-10-09" -> {date, sessions: {sid: 기록}}
+  let account = null;         // 로그인한 사람 {uid, name}
+  let backend = null;         // 기록 저장소 {save(날짜, {sid: 기록}), watch(fn)}
+  let unwatch = null;
+  let login = null, logout = null;  // Firebase를 불러오면 채워진다
+  let cur = null;             // 지금 재생 중인 운동 한 번
+  let dragging = false;
 
-fetch('routine.json').then(r => r.json()).then(r => {
-  ex = r.exercises.map((e, i) => {
-    const [animal, action] = e.name.split(' - ');
-    const reps = [e, ...(e.parts || [])].reduce((a, p) => a + (p.repetitions || 0), 0);
-    // build_guide.py와 같은 파일명 규칙: "01 오리 - ….mp3"
-    const src = 'guides/' + encodeURIComponent(`${String(i + 1).padStart(2, '0')} ${e.name}.mp3`);
-    return { id: e.id, animal, action, intro: e.intro, reps, src, dur: 0 };
-  });
-  ex.forEach(e => {
-    const a = new Audio();
-    a.preload = 'metadata';
-    a.onloadedmetadata = () => { e.dur = a.duration; renderList(); };
-    a.src = e.src;
-  });
-  $('#playAll').disabled = false;
-  renderList(); renderStats();
-}).catch(() => {
-  $('#list').innerHTML = '<li class="err">운동 목록을 불러오지 못했어요. 새로고침해 주세요.</li>';
-});
+  // ---------- 작은 도구들 ----------
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const pad = n => String(n).padStart(2, "0");
+  const clock = s => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${pad(s % 60)}`; };
+  const dur = s => { s = Math.round(s); const m = Math.floor(s / 60), r = s % 60; return m ? (r ? `${m}분 ${r}초` : `${m}분`) : `${r}초`; };
+  const dayKey = ms => { const d = new Date(ms); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  // 같은 github.io 주소를 쓰는 다른 앱과 겹치지 않게 접두사를 붙인다
+  const store = {
+    get(k) { try { return localStorage.getItem("exg:" + k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem("exg:" + k, v); } catch {} },
+    raw(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  };
 
-function play(i, all) {
-  if (i < 0 || i >= ex.length) return;
-  finish(false);
-  routine = all; cur = i;
-  audio.src = ex[i].src;
-  audio.play().catch(() => {});
-  session = { t: Date.now(), id: ex[i].id, sec: 0 };
-  lastPos = 0;
-  $('#player').hidden = false;
-  renderList(); renderPlayer();
-}
-
-// 현재 세션을 기록으로 옮긴다. ended=true면 끝까지 재생된 경우
-function finish(ended) {
-  if (!session) return;
-  const s = session;
-  session = null;
-  save(PENDING_KEY, null);
-  const done = ended && s.sec >= audio.duration * DONE_RATIO;
-  if (done || s.sec >= MIN_SEC) {
-    log.push({ t: s.t, id: s.id, sec: Math.round(s.sec), done });
-    save(LOG_KEY, log);
-    renderStats(); renderList();
+  function notice(text, warn) {
+    const n = $("notice");
+    n.hidden = !text; n.textContent = text || ""; n.classList.toggle("warn", !!warn);
   }
-}
 
-function toggle() {
-  if (cur < 0) return;
-  if (!session) return play(cur, routine);   // 끝난 운동 다시 듣기
-  audio.paused ? audio.play().catch(() => {}) : audio.pause();
-}
-
-audio.addEventListener('timeupdate', () => {
-  const t = audio.currentTime, d = t - lastPos;
-  lastPos = t;
-  if (session && !audio.paused && d > 0 && d < 5) {  // 건너뛴 구간은 안 셈
-    session.sec += d;
-    if (Date.now() - lastSaved > 5000) { save(PENDING_KEY, session); lastSaved = Date.now(); }
+  // ---------- 횟수 고르기 ----------
+  // repEnds = part(좌우·상하 등)마다 각 회가 끝나는 시각. 횟수를 줄이면 part마다 남은 회차를 건너뛰고 마무리 안내로 간다
+  let repPref = { eye: {}, face: {} };  // 가이드 -> 운동 id -> 고른 횟수 (이 기기에만 저장)
+  try { Object.assign(repPref, JSON.parse(store.get("reps") || "{}")); } catch {}
+  const maxReps = g => Math.max(...g.repEnds.map(p => p.length));
+  const canPick = g => !FIXED.has(g.id) && maxReps(g) > 1;
+  const target = g => canPick(g) ? Math.min(maxReps(g), repPref[g.gk][g.id] || maxReps(g)) : maxReps(g);
+  const totalReps = g => g.repEnds.reduce((a, p) => a + Math.min(p.length, target(g)), 0);
+  // 건너뛸 구간 [고른 횟수째 회가 끝난 시각, 마지막 회가 끝난 시각] 목록
+  const skips = g => { const n = target(g); return g.repEnds.filter(p => p.length > n).map(p => [p[n - 1], p[p.length - 1]]); };
+  const planDur = g => skips(g).reduce((a, [s, e]) => a - (e - s), g.duration);
+  // 파일 위치 <-> 건너뛴 구간을 뺀 진행 시간 (재생 바와 시간 표시에 씀)
+  function toPlan(g, t) { let x = t; for (const [s, e] of skips(g)) x -= Math.max(0, Math.min(t, e) - s); return x; }
+  function toFile(g, x) { let t = x; for (const [s, e] of skips(g)) if (t >= s) t += e - s; return t; }
+  function repPicker(g) {
+    const wrap = el("label", "reps");
+    if (g.repEnds.length > 1) wrap.append(el("span", null, "방향마다"));  // 라마·개미핥기, 눈 13·14번: 방향마다 같은 횟수
+    const sel = el("select");
+    sel.id = `reps-${g.gk}-${g.id}`;
+    sel.setAttribute("aria-label", `${g.name} 횟수`);
+    for (let n = 1; n <= maxReps(g); n++) { const o = el("option", null, `${n}회`); o.value = String(n); sel.append(o); }
+    sel.value = String(target(g));
+    sel.addEventListener("change", () => {
+      repPref[g.gk][g.id] = Number(sel.value);
+      store.set("reps", JSON.stringify(repPref));
+      renderList(); renderPlayer();
+    });
+    wrap.append(sel);
+    return wrap;
   }
-  renderProgress();
-});
-audio.addEventListener('seeked', () => { lastPos = audio.currentTime; });
-audio.addEventListener('loadedmetadata', renderProgress);
-audio.addEventListener('play', renderPlayer);
-audio.addEventListener('pause', () => { if (session) save(PENDING_KEY, session); renderPlayer(); });
-audio.addEventListener('ended', () => {
-  finish(true);
-  if (routine && cur < ex.length - 1) play(cur + 1, true);
-  else { routine = false; renderPlayer(); }
-});
-addEventListener('pagehide', () => { if (session) save(PENDING_KEY, session); });
 
-$('#playAll').onclick = () => play(0, true);
-$('#toggle').onclick = toggle;
-$('#prev').onclick = () => play(cur - 1, routine);
-$('#next').onclick = () => play(cur + 1, routine);
-$('#seek').oninput = e => { audio.currentTime = +e.target.value; };
-$('#list').onclick = e => {
-  const b = e.target.closest('.row');
-  if (!b) return;
-  const i = +b.dataset.i;
-  i === cur && session ? toggle() : play(i, false);
-};
-
-function doneToday() {
-  const today = dayKey(Date.now());
-  return new Set(log.filter(l => l.done && dayKey(l.t) === today).map(l => l.id));
-}
-
-function renderList() {
-  if (!ex.length) return;
-  const done = doneToday();
-  const total = ex.reduce((a, e) => a + e.dur, 0);
-  $('#total').textContent = `${ex.length}가지` + (ex.every(e => e.dur) ? ` · 약 ${Math.round(total / 60)}분` : '');
-  $('#list').innerHTML = ex.map((e, i) => `
-    <li class="item${i === cur ? ' is-current' : ''}">
-      <button class="row" data-i="${i}" aria-label="${esc(e.animal)} 운동 재생">
-        <span class="num">${i + 1}</span>
-        <span><b class="animal">${esc(e.animal)}</b><span class="action">${esc(e.action)}</span></span>
-        <span class="meta"><span>${e.reps}회 · ${e.dur ? clock(e.dur) : '–'}</span>${done.has(e.id) ? '<span class="check">✓ 오늘 완료</span>' : ''}</span>
-      </button>
-      ${i === cur ? `<p class="intro">${esc(e.intro)}</p>` : ''}
-    </li>`).join('');
-}
-
-function renderPlayer() {
-  if (cur < 0) return;
-  const e = ex[cur];
-  $('#pAnimal').textContent = e.animal;
-  $('#pAction').textContent = e.action;
-  const playing = session && !audio.paused;
-  $('#toggle').innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
-  $('#toggle').setAttribute('aria-label', playing ? '일시정지' : '재생');
-  $('#prev').disabled = cur === 0;
-  $('#next').disabled = cur === ex.length - 1;
-  $('#pMode').textContent = routine ? `전체 루틴 ${cur + 1} / ${ex.length}` : (session ? '' : '끝났어요. 다시 들으려면 재생을 누르세요.');
-  renderProgress();
-}
-
-function renderProgress() {
-  const d = audio.duration || 0;
-  $('#seek').max = d || 1;
-  $('#seek').value = audio.currentTime;
-  $('#pTime').textContent = `${clock(audio.currentTime)} / ${clock(d)}`;
-}
-
-function setBig(el, sec) {
-  const [n, unit] = bigNum(sec);
-  el.innerHTML = `${n}<small>${unit}</small>`;
-}
-
-function renderStats() {
-  const now = new Date(), today = dayKey(now);
-  const byDay = {};
-  log.forEach(l => { const k = dayKey(l.t); byDay[k] = (byDay[k] || 0) + l.sec; });
-
-  setBig($('#sToday'), byDay[today] || 0);
-  $('#sDone').innerHTML = `${doneToday().size}<small>/${ex.length || 7}</small>`;
-
+  // ---------- 오늘 상태 계산 ----------
+  const sessionsOf = key => Object.values(days.get(key)?.sessions || {});
+  function todayInfo() {
+    const done = new Set(), best = new Map();
+    let secs = 0;
+    for (const s of sessionsOf(dayKey(Date.now()))) {
+      const k = `${s.guide}:${s.ex}`;
+      secs += s.durationSec || 0;
+      if (s.completed) done.add(k);
+      best.set(k, Math.max(best.get(k) || 0, s.reps || 0));
+    }
+    return { done, best, secs };
+  }
   // 연속 운동일: 오늘 아직 안 했으면 어제부터 센다
-  let streak = 0;
-  const d = new Date(now);
-  if (!byDay[today]) d.setDate(d.getDate() - 1);
-  while (byDay[dayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-  $('#sStreak').innerHTML = `${streak}<small>일</small>`;
-
-  const monday = new Date(now);
-  monday.setHours(0, 0, 0, 0);
-  monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
-  setBig($('#sWeek'), log.filter(l => l.t >= monday.getTime()).reduce((a, l) => a + l.sec, 0));
-
-  renderHeat(byDay, monday, today);
-  renderDays();
-}
-
-// 최근 8주. 열 = 주(월요일 시작), 행 = 요일
-function renderHeat(byDay, monday, today) {
-  const start = new Date(monday);
-  start.setDate(start.getDate() - 7 * 7);
-  const dateAt = (w, r) => { const x = new Date(start); x.setDate(x.getDate() + w * 7 + r); return x; };
-  let html = '<span></span>';
-  for (let w = 0; w < 8; w++) {
-    const days = [...Array(7)].map((_, r) => dateAt(w, r));
-    const first = days.find(x => x.getDate() === 1);
-    html += `<span class="lbl">${w === 0 ? dateAt(0, 0).getMonth() + 1 + '월' : first ? first.getMonth() + 1 + '월' : ''}</span>`;
+  function streak() {
+    let n = 0;
+    const d = new Date();
+    if (!sessionsOf(dayKey(d)).length) d.setDate(d.getDate() - 1);
+    while (sessionsOf(dayKey(d)).length) { n++; d.setDate(d.getDate() - 1); }
+    return n;
   }
-  for (let r = 0; r < 7; r++) {
-    html += `<span class="lbl">${WEEKDAY[(r + 1) % 7]}</span>`;
+
+  // ---------- 화면 그리기 ----------
+  function renderAccount() {
+    $("who").hidden = !account;
+    $("whoName").textContent = account ? account.name : "";
+    $("btnLogout").hidden = !logout;
+    $("btnLoginTop").hidden = !!account;
+    $("loginHint").hidden = !!account;
+    $("stats").hidden = !account;
+    $("btnLogin").disabled = $("btnLoginTop").disabled = !login && !inApp;
+    $("btnLogin").textContent = login || inApp ? "Google로 로그인" : "로그인 준비 중…";
+  }
+
+  function renderStats() {
+    if (!account) return;
+    const t = todayInfo();
+    $("stDone").firstChild.nodeValue = String(t.done.size);
+    $("stTime").firstChild.nodeValue = String(Math.round(t.secs / 60));
+    $("stStreak").firstChild.nodeValue = String(streak());
+  }
+
+  function renderTabs() {
+    document.body.dataset.guide = view === "face" ? "face" : "eye";
+    for (const b of document.querySelectorAll(".tabs button")) b.setAttribute("aria-selected", String(b.dataset.view === view));
+    $("viewRoutine").hidden = view === "log";
+    $("viewLog").hidden = view !== "log";
+    if (view !== "log") $("viewRoutine").setAttribute("aria-labelledby", "tab-" + view);
+  }
+
+  function renderList() {
+    if (view === "log") return;
+    const list = $("list"), gs = guides[view];
+    list.replaceChildren();
+    if (!gs.length) return;
+    const t = todayInfo();
+    for (const [i, g] of gs.entries()) {
+      const key = `${g.gk}:${g.id}`, playing = cur && cur.g === g;
+      const li = el("li", "item" + (playing ? " current" : ""));
+      const b = el("button", "pick");
+      b.type = "button";
+      b.append(el("span", "idx", pad(g.n)));
+      const mid = el("span");
+      mid.append(el("span", "name", g.name));
+      const meta = el("span", "meta");
+      meta.append(el("span", "num", clock(planDur(g))));
+      if (!canPick(g)) meta.append(el("span", null, `${totalReps(g)}회`));
+      if (TAGS[g.id]) meta.append(el("span", "tag", TAGS[g.id]));
+      mid.append(meta);
+      b.append(mid);
+      const side = el("div", "side");
+      const st = el("span", "status");
+      if (playing) { st.textContent = audio.paused ? "일시정지" : "재생 중"; }
+      else if (t.done.has(key)) {
+        st.classList.add("done");
+        st.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> 오늘 함';
+      } else if (t.best.get(key)) { st.textContent = `${t.best.get(key)}/${totalReps(g)}회까지`; }
+      side.append(st);
+      if (canPick(g)) side.append(repPicker(g));
+      b.addEventListener("click", () => playing ? toggle() : start(g.gk, i));
+      li.append(b, side);
+      list.append(li);
+    }
+    const total = gs.reduce((a, g) => a + planDur(g), 0);
+    $("routineSum").textContent = `${GUIDE_NAME[view]} ${gs.length}가지 · 모두 하면 ${Math.round(total / 60)}분`;
+    const next = gs.findIndex(g => !t.done.has(`${g.gk}:${g.id}`));
+    const btn = $("btnResume");
+    btn.hidden = false;
+    btn.textContent = next < 0 ? "처음부터 다시" : next === 0 ? "1번부터 시작" : `${next + 1}번부터 이어서`;
+    btn.dataset.idx = String(Math.max(0, next));
+  }
+
+  // 최근 8주 달력. 열 = 주(월요일 시작), 행 = 요일, 색 = 그날 운동한 시간
+  function heat() {
+    const box = el("section", "heat-box");
+    box.append(el("h2", null, "최근 8주"));
+    const grid = el("div", "heat");
+    grid.setAttribute("role", "img");
+    const now = new Date(), today = dayKey(now);
+    const start = new Date(now);
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - (start.getDay() + 6) % 7 - 7 * 7);
+    const dateAt = (w, r) => { const x = new Date(start); x.setDate(x.getDate() + w * 7 + r); return x; };
+    let active = 0;
+    grid.append(el("span"));
     for (let w = 0; w < 8; w++) {
-      const x = dateAt(w, r), k = dayKey(x), sec = byDay[k] || 0;
-      if (x > new Date() && k !== today) { html += '<span class="cell future"></span>'; continue; }
-      const lv = sec === 0 ? 0 : sec < 300 ? 1 : sec < 600 ? 2 : 3;
-      const tip = `${x.getMonth() + 1}월 ${x.getDate()}일 · ${sec ? human(sec) : '운동 안 함'}`;
-      html += `<span class="cell${lv ? ' l' + lv : ''}${k === today ? ' today' : ''}" title="${tip}"></span>`;
+      const first = [...Array(7)].map((_, r) => dateAt(w, r)).find(x => x.getDate() === 1);
+      grid.append(el("span", "lbl", w === 0 ? `${dateAt(0, 0).getMonth() + 1}월` : first ? `${first.getMonth() + 1}월` : ""));
+    }
+    for (let r = 0; r < 7; r++) {
+      grid.append(el("span", "lbl", WEEKDAY[(r + 1) % 7]));
+      for (let w = 0; w < 8; w++) {
+        const x = dateAt(w, r), k = dayKey(x);
+        const sec = sessionsOf(k).reduce((a, s) => a + (s.durationSec || 0), 0);
+        if (sec) active++;
+        const c = el("span", "cell");
+        if (x > now && k !== today) c.classList.add("future");
+        else if (sec) c.classList.add(sec < 300 ? "l1" : sec < 600 ? "l2" : "l3");
+        if (k === today) c.classList.add("today");
+        c.title = `${x.getMonth() + 1}월 ${x.getDate()}일 · ${sec ? dur(sec) : "운동 안 함"}`;
+        grid.append(c);
+      }
+    }
+    grid.setAttribute("aria-label", `최근 8주 중 ${active}일 운동`);
+    const legend = el("div", "legend");
+    for (const [lv, t] of [["h0", "안 함"], ["h1", "5분 미만"], ["h2", "10분 미만"], ["h3", "10분 이상"]]) {
+      const s = el("span"), i = el("i");
+      i.style.background = `var(--${lv})`;
+      s.append(i, t);
+      legend.append(s);
+    }
+    box.append(grid, legend);
+    return box;
+  }
+
+  function renderLog() {
+    const box = $("log");
+    box.replaceChildren();
+    if (!account) {
+      const p = el("p", "empty");
+      p.append(el("strong", null, "로그인하면 여기에 기록이 쌓입니다."), document.createTextNode("날짜별로 한 운동과 횟수, 시간, 최근 8주 달력이 보입니다. 같은 Google 계정이면 휴대폰과 PC에서 같은 기록이 보입니다."));
+      box.append(p); return;
+    }
+    box.append(heat());
+    const keys = [...days.keys()].filter(k => sessionsOf(k).length).sort().reverse();
+    if (!keys.length) {
+      const p = el("p", "empty");
+      p.append(el("strong", null, "아직 기록이 없습니다."), document.createTextNode(`운동을 ${MIN_SAVE}초 넘게 하면 운동 종류, 횟수, 시각, 시간이 자동으로 저장됩니다.`));
+      box.append(p); return;
+    }
+    const today = dayKey(Date.now()), yest = dayKey(Date.now() - 864e5);
+    for (const k of keys) {
+      const list = sessionsOf(k).sort((a, b) => b.startedAt - a.startedAt);
+      const secs = list.reduce((a, s) => a + (s.durationSec || 0), 0);
+      const d = new Date(list[0].startedAt);
+      const label = (k === today ? "오늘 · " : k === yest ? "어제 · " : "") + d.toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
+      const sec = el("section", "day");
+      const head = el("div", "day-head");
+      head.append(el("h3", null, label), el("span", null, `${list.length}번 · ${dur(secs)}`));
+      const ul = el("ul", "rows");
+      for (const s of list) {
+        const li = el("li", "row");
+        li.append(el("span", "time", new Date(s.startedAt).toLocaleTimeString("ko-KR", { hour: "numeric", minute: "2-digit" })));
+        const what = el("span", "what", s.name);
+        const sub = el("small");
+        sub.append(el("b", s.guide === "face" ? "face" : null, GUIDE_NAME[s.guide] || ""), document.createTextNode(s.n ? ` · ${pad(s.n)}번` : ""));
+        what.append(sub);
+        const figs = el("span", "figs", s.repsTotal != null ? `${s.reps} / ${s.repsTotal}회` : "");
+        figs.append(el("small", s.completed ? "done" : null, `${dur(s.durationSec || 0)} · ${s.completed ? "끝까지 함" : "중간에 멈춤"}`));
+        li.append(what, figs);
+        ul.append(li);
+      }
+      sec.append(head, ul);
+      box.append(sec);
     }
   }
-  $('#heat').innerHTML = html;
-}
 
-// 날짜별 기록 (최근 14일치)
-function renderDays() {
-  $('#empty').hidden = log.length > 0;
-  const groups = new Map();
-  [...log].sort((a, b) => b.t - a.t).forEach(l => {
-    const k = dayKey(l.t);
-    if (!groups.has(k)) groups.set(k, []);
-    groups.get(k).push(l);
+  function renderPlayer() {
+    if (!cur) return;
+    const g = cur.g, d = planDur(g), t = toPlan(g, audio.currentTime || 0);
+    $("pNum").textContent = pad(g.n);
+    $("pName").textContent = g.name;
+    $("pReps").replaceChildren(document.createTextNode(`${Math.min(cur.reps.size, totalReps(g))} / ${totalReps(g)}`), el("small", null, "회"));
+    $("pCur").textContent = clock(t);
+    $("pDur").textContent = clock(d);
+    if (!dragging) $("pSeek").value = String(d ? Math.round(t / d * 1000) : 0);
+    $("pPrev").disabled = cur.idx === 0;
+    $("pNext").disabled = cur.idx === guides[cur.gk].length - 1;
+    $("pIntro").textContent = g.intro;
+  }
+  function setPlaying(on) {
+    $("icoPlay").hidden = on; $("icoPause").hidden = !on;
+    $("pPlay").setAttribute("aria-label", on ? "일시정지" : "재생");
+  }
+  function renderAll() { renderAccount(); renderStats(); renderTabs(); renderList(); renderLog(); renderPlayer(); }
+
+  // ---------- 기록 저장 ----------
+  // 하루에 문서 하나: users/<uid>/days/<날짜> = {date, sessions: {sid: 기록}}. merge로 써서 같은 기록을 다시 써도 덮어쓸 뿐이다
+  function saveError(e) {
+    const code = e && e.code;
+    if (code === "resource-exhausted") return "오늘 저장할 수 있는 양을 넘었습니다. 내일부터 다시 저장됩니다.";
+    if (code === "permission-denied") return "기록을 저장할 권한이 없습니다. 로그아웃한 뒤 다시 로그인해 주세요.";
+    return "기록을 저장하지 못했습니다. 인터넷 연결을 확인해 주세요.";
+  }
+  function save(c) {
+    if (!backend || !c.startedAt || c.played < MIN_SAVE) return;
+    c.savedAt = c.played;
+    const rec = { guide: c.gk, ex: c.g.id, name: c.g.name, n: c.g.n, startedAt: c.startedAt, durationSec: Math.round(c.played), reps: Math.min(c.reps.size, totalReps(c.g)), repsTotal: totalReps(c.g), completed: c.completed };
+    backend.save(dayKey(c.startedAt), { [c.sid]: rec }).catch(e => notice(saveError(e), true));
+  }
+
+  // 로그인한 사람의 기록을 실시간으로 받는다 (다른 기기에서 한 운동도 바로 보인다)
+  function signedIn(acc, be) {
+    account = acc; backend = be;
+    unwatch = be.watch(m => { days = m; renderAll(); });
+    offerLegacy();
+    renderAll();
+  }
+  function signedOut() {
+    if (unwatch) unwatch();
+    unwatch = null; account = null; backend = null; days = new Map();
+    $("legacy").hidden = true;
+    renderAll();
+  }
+
+  // 화면 확인용 (FIREBASE_CONFIG가 없을 때): 이 탭에서만 유지된다
+  function memoryBackend() {
+    const mem = new Map();
+    let fn = null;
+    return {
+      save(key, recs) {
+        const d = mem.get(key) || { date: key, sessions: {} };
+        mem.set(key, { date: key, sessions: { ...d.sessions, ...recs } });
+        if (fn) fn(new Map(mem));
+        return Promise.resolve();
+      },
+      watch(f) { fn = f; f(new Map(mem)); return () => { fn = null; }; },
+    };
+  }
+
+  async function startFirebase() {
+    const [{ initializeApp }, A, F] = await Promise.all(["firebase-app.js", "firebase-auth.js", "firebase-firestore.js"].map(f => import(SDK + f)));
+    const app = initializeApp(FIREBASE_CONFIG);
+    const auth = A.getAuth(app);
+    let fs;
+    try { fs = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
+    catch { fs = F.getFirestore(app); }  // 사파리 사생활 보호 모드 등 기기 저장이 안 되면 메모리 캐시로
+    const provider = new A.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });  // 가족이 같은 기기를 쓸 때 계정을 고를 수 있게
+    // 팝업은 클릭 처리 안에서 바로 열어야 아이폰 사파리가 막지 않는다 (앞에 await 금지)
+    login = () => A.signInWithPopup(auth, provider).catch(e => {
+      const code = e && e.code;
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return;
+      if (code === "auth/popup-blocked") notice("로그인 창이 막혔습니다. 브라우저에서 이 사이트의 팝업을 허용한 뒤 다시 눌러 주세요.", true);
+      else if (code === "auth/unauthorized-domain") notice("이 주소에서는 로그인을 쓸 수 없습니다. 앱 관리자에게 알려 주세요.", true);
+      else notice("로그인하지 못했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.", true);
+    });
+    logout = () => { finish(); return A.signOut(auth); };
+    A.onAuthStateChanged(auth, u => {
+      signedOut();
+      if (!u) return;
+      signedIn({ uid: u.uid, name: u.displayName || u.email || "" }, {
+        save: (key, recs) => F.setDoc(F.doc(fs, "users", u.uid, "days", key), { date: key, sessions: recs }, { merge: true }),
+        watch: fn => F.onSnapshot(
+          F.query(F.collection(fs, "users", u.uid, "days"), F.orderBy("date", "desc"), F.limit(120)),
+          snap => fn(new Map(snap.docs.map(d => [d.id, d.data()]))),
+          () => notice("기록을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.", true)),
+      });
+    });
+    renderAccount();
+  }
+
+  // ---------- 예전 얼굴운동 기록 가져오기 ----------
+  // 예전 페이지는 기록을 이 기기 브라우저에만 남겼다: [{t: 시작 ms, id, sec, done}]
+  function legacyLog() {
+    try {
+      const log = JSON.parse(store.raw(LEGACY_LOG) || "[]");
+      const p = JSON.parse(store.raw(LEGACY_PENDING) || "null");  // 탭을 닫아 마무리 못 한 기록
+      if (p && p.sec >= 10) log.push({ ...p, done: false });
+      return log.filter(l => l && l.t && l.id);
+    } catch { return []; }
+  }
+  function offerLegacy() {
+    if (!account || store.get("imported")) return;  // 이 기기 기록은 한 계정만 가져간다 (같이 쓰는 기기)
+    const n = legacyLog().length;
+    if (!n) return;
+    $("legacyText").textContent = `이 기기에 예전 얼굴운동 기록이 ${n}개 있습니다. 내 계정으로 가져올까요?`;
+    $("legacy").hidden = false;
+  }
+  function importLegacy() {
+    const byDay = new Map(), log = legacyLog();
+    for (const l of log) {
+      const g = guides.face.find(x => x.id === l.id);
+      const rec = { guide: "face", ex: l.id, name: g ? g.name : l.id, n: g ? g.n : 0, startedAt: l.t, durationSec: Math.round(l.sec || 0), reps: null, repsTotal: null, completed: !!l.done };
+      const k = dayKey(l.t);
+      byDay.set(k, { ...byDay.get(k), [`face-legacy-${l.t}-${l.id}`]: rec });  // 고정 id라 두 번 가져와도 겹치지 않는다
+    }
+    store.set("imported", account.uid);
+    $("legacy").hidden = true;
+    Promise.all([...byDay].map(([k, recs]) => backend.save(k, recs)))
+      .then(() => notice(`예전 얼굴운동 기록 ${log.length}개를 가져왔습니다.`), e => notice(saveError(e), true));
+  }
+  $("legacyYes").addEventListener("click", importLegacy);
+  $("legacyNo").addEventListener("click", () => { store.set("imported", account.uid); $("legacy").hidden = true; });
+
+  // ---------- 로그인 버튼 ----------
+  function onLogin() {
+    if (inApp) { $("inapp").hidden = false; $("inappUrl").textContent = location.href; return; }
+    if (login) login();
+  }
+  $("btnLogin").addEventListener("click", onLogin);
+  $("btnLoginTop").addEventListener("click", onLogin);
+  $("btnLogout").addEventListener("click", () => logout && logout());
+  $("btnCopy").addEventListener("click", () => {
+    const done = () => { $("btnCopy").textContent = "복사했습니다"; };
+    try { navigator.clipboard.writeText(location.href).then(done, () => {}); } catch {}
   });
-  const name = id => (ex.find(e => e.id === id) || { animal: id }).animal;
-  $('#days').innerHTML = [...groups.values()].slice(0, 14).map(items => {
-    const d = new Date(items[0].t);
-    const sum = items.reduce((a, l) => a + l.sec, 0);
-    return `<div class="day">
-      <h3>${d.getMonth() + 1}월 ${d.getDate()}일 ${WEEKDAY[d.getDay()]}요일 <span>총 ${human(sum)}</span></h3>
-      <ul>${items.map(l => {
-        const t = new Date(l.t);
-        return `<li><span class="time">${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}</span>
-          <span>${esc(name(l.id))}</span><span>${human(l.sec)}</span>
-          <span class="chip ${l.done ? 'done' : 'part'}">${l.done ? '완료' : '중단'}</span></li>`;
-      }).join('')}</ul>
-    </div>`;
-  }).join('');
-}
 
-renderStats();
+  // ---------- 재생 ----------
+  function start(gk, idx) {
+    finish();
+    const g = guides[gk][idx];
+    if (!g) return;
+    cur = { gk, g, idx, sid: newId(), startedAt: 0, played: 0, prev: 0, seeking: false, reps: new Set(), completed: false, savedAt: 0 };
+    $("pToast").hidden = true;
+    audio.src = `${gk}/${g.file}`;
+    $("player").hidden = false;
+    renderPlayer(); renderList();
+    play();
+  }
+  function play() {
+    const p = audio.play();
+    if (p && p.catch) p.catch(() => { setPlaying(false); toast("재생 버튼을 눌러 주세요."); });
+  }
+  function toggle() { if (!cur) return; audio.paused ? play() : audio.pause(); }
+  // 지금 운동을 마무리하고 기록을 남긴다 (다른 운동으로 넘어가거나 끝내기)
+  function finish() {
+    const c = cur;
+    if (!c) return;
+    cur = null;
+    if (!audio.paused) audio.pause();
+    if (c.played > c.savedAt) save(c);
+  }
+  function toast(t) { const e = $("pToast"); e.textContent = t; e.hidden = false; }
+
+  // 실제로 소리가 나간 구간만 센다: 앞으로 건너뛴 구간의 회차는 세지 않는다
+  function advance(t) {
+    if (!cur || cur.seeking) return;
+    const d = t - cur.prev;
+    if (d > 0) {
+      cur.played += d;
+      const n = target(cur.g);
+      cur.g.repEnds.forEach((p, pi) => p.slice(0, n).forEach((end, i) => { if (end > cur.prev && end <= t + 0.05) cur.reps.add(`${pi}.${i}`); }));
+      if (cur.played >= MIN_SAVE && (cur.savedAt === 0 || cur.played - cur.savedAt >= CHECKPOINT)) save(cur);
+    }
+    cur.prev = t;
+  }
+
+  // 고른 횟수를 채우면 그 part의 남은 회차를 건너뛴다. timeupdate는 0.25초 간격이라 따로 자주 확인한다
+  setInterval(() => {
+    if (!cur || audio.paused || cur.seeking) return;
+    const t = audio.currentTime;
+    for (const [s, e] of skips(cur.g)) {
+      if (t >= s - SKIP_LEAD && t < e - 0.5) { advance(s); audio.currentTime = e; return; }
+    }
+  }, 50);
+
+  audio.addEventListener("play", () => {
+    if (cur && !cur.startedAt) cur.startedAt = Date.now();
+    if (cur) cur.prev = audio.currentTime;
+    setPlaying(true); wakeOn(); renderList();
+  });
+  audio.addEventListener("pause", () => {
+    setPlaying(false); wakeOff();
+    if (cur && !audio.ended && cur.played > cur.savedAt) save(cur);
+    renderList();
+  });
+  audio.addEventListener("seeking", () => { if (cur) cur.seeking = true; });
+  audio.addEventListener("seeked", () => { if (cur) { cur.prev = audio.currentTime; cur.seeking = false; } });
+  audio.addEventListener("timeupdate", () => { advance(audio.currentTime); renderPlayer(); });
+  audio.addEventListener("loadedmetadata", renderPlayer);
+  audio.addEventListener("ended", () => {
+    if (!cur) return;
+    advance(audio.duration || cur.g.duration);
+    cur.completed = true;
+    save(cur);
+    setPlaying(false); wakeOff();
+    const c = cur, next = c.idx + 1;
+    renderAll();
+    if ($("pAuto").checked && next < guides[c.gk].length) setTimeout(() => { if (cur === c && audio.ended) start(c.gk, next); }, 1500);
+  });
+  audio.addEventListener("error", () => { if (cur) toast("소리 파일을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요."); });
+
+  $("pPlay").addEventListener("click", toggle);
+  $("pPrev").addEventListener("click", () => cur && start(cur.gk, cur.idx - 1));
+  $("pNext").addEventListener("click", () => cur && start(cur.gk, cur.idx + 1));
+  $("pStop").addEventListener("click", () => { finish(); $("player").hidden = true; audio.removeAttribute("src"); audio.load(); renderAll(); });
+  $("pSeek").addEventListener("input", () => {
+    dragging = true;
+    const d = cur ? planDur(cur.g) : 0;
+    $("pCur").textContent = clock($("pSeek").value / 1000 * d);
+  });
+  $("pSeek").addEventListener("change", () => {
+    if (cur) audio.currentTime = toFile(cur.g, $("pSeek").value / 1000 * planDur(cur.g));
+    dragging = false;
+  });
+  $("pHow").addEventListener("click", () => {
+    const open = $("pIntro").hidden;
+    $("pIntro").hidden = !open;
+    $("pHow").setAttribute("aria-expanded", String(open));
+    $("pHow").textContent = open ? "방법 접기" : "방법 보기";
+  });
+  $("pAuto").checked = store.get("autoNext") !== "0";
+  $("pAuto").addEventListener("change", () => store.set("autoNext", $("pAuto").checked ? "1" : "0"));
+  $("btnResume").addEventListener("click", () => start(view, Number($("btnResume").dataset.idx || 0)));
+
+  for (const b of document.querySelectorAll(".tabs button")) {
+    b.addEventListener("click", () => { view = b.dataset.view; store.set("tab", view); renderTabs(); renderList(); });
+  }
+  if (["eye", "face", "log"].includes(store.get("tab"))) view = store.get("tab");
+
+  // 재생 바 높이만큼 아래 여백을 둬서 목록 끝이 가려지지 않게
+  new ResizeObserver(() => {
+    const h = $("player").hidden ? 0 : $("player").offsetHeight;
+    document.documentElement.style.setProperty("--player-h", h + "px");
+  }).observe($("player"));
+
+  // 운동하는 동안 화면이 꺼지지 않게 (안 되는 기기는 그냥 넘어감)
+  let wake = null;
+  async function wakeOn() {
+    try { if (!wake && navigator.wakeLock) { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => { wake = null; }); } } catch { wake = null; }
+  }
+  function wakeOff() { try { if (wake) wake.release(); } catch {} wake = null; }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && !audio.paused) wakeOn(); });
+  window.addEventListener("pagehide", () => { if (cur && cur.played > cur.savedAt) save(cur); });
+
+  // ---------- 시작 ----------
+  renderAll();
+  Promise.all(["eye", "face"].map(k => fetch(`${k}/guides.json`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(list => { list.forEach(g => { g.gk = k; }); guides[k] = list; })))
+    .then(() => { renderAll(); offerLegacy(); })
+    .catch(() => { $("routineSum").textContent = "운동 목록을 불러오지 못했습니다. 새로고침해 주세요."; });
+
+  if (FIREBASE_CONFIG) {
+    startFirebase().catch(() => notice("로그인 기능을 불러오지 못했습니다. 운동은 그대로 할 수 있습니다. 새로고침하면 다시 시도합니다.", true));
+  } else {
+    signedIn({ uid: "local", name: "화면 확인용 (이 탭에서만 기록)" }, memoryBackend());
+  }
+})();
 </script>
 </body>
 </html>
