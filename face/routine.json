@@ -30,6 +30,18 @@
           "steps": [{"cue": "", "seconds": 2}]
         },
         {
+          "intro": "다시 처음 방향으로 돌립니다.",
+          "repetitions": 15,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}]
+        },
+        {
+          "intro": "다시 반대 방향으로 돌립니다.",
+          "repetitions": 15,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}]
+        },
+        {
           "intro": "더 안 돌아가던 쪽이 있으면, 그쪽으로 한 번 더 돌립니다.",
           "repetitions": 15,
           "count_aloud": true,
@@ -45,10 +57,22 @@
       "repetitions": 15,
       "count_aloud": true,
       "steps": [{"cue": "", "seconds": 2}],
-      "outro": {"cue": "숨 고르세요.", "seconds": 5},
       "parts": [
         {
           "intro": "반대 방향으로 돌립니다.",
+          "repetitions": 15,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}],
+          "outro": {"cue": "숨 고르세요.", "seconds": 5}
+        },
+        {
+          "intro": "다시 처음 방향으로 돌립니다.",
+          "repetitions": 15,
+          "count_aloud": true,
+          "steps": [{"cue": "", "seconds": 2}]
+        },
+        {
+          "intro": "다시 반대 방향으로 돌립니다.",
           "repetitions": 15,
           "count_aloud": true,
           "steps": [{"cue": "", "seconds": 2}],
