@@ -246,26 +246,34 @@
         {
           "cue": "손가락 끝의 한 점을 정확하게 보세요.",
           "short_cue": "손을 다시 삼십 센티미터에 두고, 손끝을 보세요.",
-          "seconds": 10
+          "seconds": 4
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         },
         {
           "cue": "그 점을 보면서, 코앞 오 센티미터까지 천천히 당기세요.",
           "short_cue": "천천히 당기세요.",
-          "seconds": 3
+          "seconds": 2
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         },
         {
           "cue": "두 눈을 모아서, 그대로 보세요.",
           "short_cue": "모아서 보세요.",
-          "seconds": 10
+          "seconds": 4
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         },
         {
           "cue": "손을 내리고, 멀리 정해 둔 지점을 보세요.",
           "short_cue": "손을 내리고, 먼 곳을 보세요.",
-          "seconds": 10,
-          "mid_cue": {
-            "every": 5,
-            "cue": "눈을 한 번 깜빡이세요."
-          }
+          "seconds": 5
         },
         {
           "cue": "눈을 감고 쉬세요.",
@@ -324,12 +332,20 @@
         {
           "cue": "엄지를 보면서, 아주 천천히 당기세요. 흐려지면 멈추세요.",
           "short_cue": "천천히 당기고",
-          "seconds": 6
+          "seconds": 5
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         },
         {
           "cue": "다시 아주 천천히, 팔을 쭉 펴세요.",
           "short_cue": "천천히 펴고",
-          "seconds": 6
+          "seconds": 5
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         }
       ]
     },
@@ -342,11 +358,19 @@
       "steps": [
         {
           "cue": "왼쪽으로.",
-          "seconds": 2
+          "seconds": 1
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         },
         {
           "cue": "오른쪽으로.",
-          "seconds": 2
+          "seconds": 1
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         }
       ]
     },
@@ -384,7 +408,11 @@
         {
           "cue": "먼 곳을 보세요.",
           "short_cue": "먼 곳",
-          "seconds": 3
+          "seconds": 2
+        },
+        {
+          "cue": "깜빡.",
+          "seconds": 1
         }
       ]
     },
