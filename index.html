@@ -322,6 +322,10 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
   // 파일 위치 <-> 건너뛴 구간을 뺀 진행 시간 (재생 바와 시간 표시에 씀)
   function toPlan(g, t) { let x = t; for (const [s, e] of skips(g)) x -= Math.max(0, Math.min(t, e) - s); return x; }
   function toFile(g, x) { let t = x; for (const [s, e] of skips(g)) if (t >= s) t += e - s; return t; }
+  function setReps(g, n) {
+    repPref[g.gk][g.id] = Math.max(1, Math.min(n, maxReps(g)));
+    store.set("reps", JSON.stringify(repPref));
+  }
   function repPicker(g) {
     const wrap = el("label", "reps");
     if (g.repEnds.length > 1) wrap.append(el("span", null, "방향마다"));  // 라마·개미핥기, 눈 13·14번: 방향마다 같은 횟수
@@ -332,16 +336,24 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
     input.pattern = "[0-9]*";
     input.maxLength = 2;
     input.setAttribute("aria-label", `${g.name} 횟수 (1~${maxReps(g)})`);
+    input.setAttribute("role", "spinbutton");
+    input.setAttribute("aria-valuemin", "1");
+    input.setAttribute("aria-valuemax", String(maxReps(g)));
+    input.setAttribute("aria-valuenow", String(target(g)));
     input.value = String(target(g));
     input.addEventListener("focus", () => input.select());
-    input.addEventListener("keydown", e => { if (e.key === "Enter") input.blur(); });
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") input.blur();
+      // 위·아래 방향키는 1씩 올리고 내려 바로 적용한다 (다시 그려도 포커스는 이 칸으로 돌아온다)
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+      e.preventDefault();
+      setReps(g, (parseInt(input.value, 10) || target(g)) + (e.key === "ArrowUp" ? 1 : -1));
+      renderList(true); renderPlayer();
+    });
     // 입력을 마치면(다른 곳을 누르거나 Enter) 1~최대 안으로 맞춰 저장한다. 비우거나 숫자가 아니면 원래 값으로
     input.addEventListener("change", () => {
       const n = parseInt(input.value, 10);
-      if (n > 0) {
-        repPref[g.gk][g.id] = Math.min(n, maxReps(g));
-        store.set("reps", JSON.stringify(repPref));
-      }
+      if (n > 0) setReps(g, n);
       input.value = String(target(g));
       renderList(); renderPlayer();
     });
@@ -399,9 +411,9 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
     if (view !== "log") $("viewRoutine").setAttribute("aria-labelledby", "tab-" + view);
   }
 
-  function renderList() {
+  function renderList(force) {
     if (view === "log") return;
-    if (document.activeElement && document.activeElement.matches(".reps input")) return;  // 횟수를 입력하는 중에는 칸을 다시 그리지 않는다 (입력을 마치면 그린다)
+    if (!force && document.activeElement && document.activeElement.matches(".reps input")) return;  // 횟수를 입력하는 중에는 칸을 다시 그리지 않는다 (입력을 마치면 그린다)
     const list = $("list"), gs = guides[view];
     const focusId = list.contains(document.activeElement) ? document.activeElement.id : "";  // 다시 그린 뒤 포커스를 되돌린다
     list.replaceChildren();
@@ -768,7 +780,7 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
   $("pAuto").checked = store.get("autoNext") !== "0";
   $("pAuto").addEventListener("change", () => store.set("autoNext", $("pAuto").checked ? "1" : "0"));
   $("btnResume").addEventListener("click", () => start(view, Number($("btnResume").dataset.idx || 0)));
-  $("list").addEventListener("focusout", e => { if (e.target.matches(".reps input")) setTimeout(renderList); });  // 횟수 칸에서 빠져나오면 시간·상태를 다시 그린다
+  $("list").addEventListener("focusout", e => { if (e.target.matches(".reps input")) setTimeout(() => renderList()); });  // 횟수 칸에서 빠져나오면 시간·상태를 다시 그린다
 
   for (const b of document.querySelectorAll(".tabs button")) {
     b.addEventListener("click", () => { view = b.dataset.view; store.set("tab", view); renderTabs(); renderList(); });
