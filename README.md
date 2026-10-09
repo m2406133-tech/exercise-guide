@@ -3,7 +3,9 @@
 혼자 하면 너무 빨리 하게 되는 눈운동(14가지)과 얼굴운동(7가지)을 정해진 속도로 안내하고 횟수를 소리 내어 세 주는 웹 앱.
 Google로 로그인하면 기록이 계정에 저장돼 휴대폰이든 PC든 같은 기록이 보인다. 로그인하지 않아도 운동은 할 수 있다(기록만 안 남음).
 
-주소: https://m2406133-tech.github.io/face-exercise-guide/ (GitHub Pages, `main` 브랜치 루트)
+주소: https://m2406133-tech.github.io/exercise-guide/ (GitHub Pages, `main` 브랜치 루트)
+
+예전 얼굴운동 가이드(`face-exercise-guide` 저장소)를 이어받았다. 그때 기기 브라우저에 남은 얼굴운동 기록은 같은 `m2406133-tech.github.io` 주소라 이 앱에서 읽을 수 있고, 처음 로그인할 때 가져올지 묻는다.
 
 ## 파일
 - `index.html` — 앱 전부 (눈운동/얼굴운동/기록 탭, 재생 바, 횟수 고르기, 로그인, 기록)
