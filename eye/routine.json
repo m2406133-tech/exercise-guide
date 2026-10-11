@@ -103,7 +103,7 @@
           "steps": [
             {
               "tone": true,
-              "seconds": 0.25
+              "seconds": 0.3
             }
           ],
           "outro": {
@@ -118,7 +118,7 @@
           "steps": [
             {
               "tone": true,
-              "seconds": 0.25
+              "seconds": 0.3
             }
           ],
           "outro": {
@@ -133,7 +133,7 @@
           "steps": [
             {
               "tone": true,
-              "seconds": 0.25
+              "seconds": 0.3
             }
           ],
           "outro": {
@@ -255,7 +255,7 @@
         {
           "cue": "그 점을 보면서, 코앞 오 센티미터까지 천천히 당기세요.",
           "short_cue": "천천히 당기세요.",
-          "seconds": 2
+          "seconds": 4
         },
         {
           "cue": "깜빡.",

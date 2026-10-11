@@ -556,7 +556,8 @@ h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; w
     $("pIntro").textContent = g.intro;
   }
   function setPlaying(on) {
-    $("icoPlay").hidden = on; $("icoPause").hidden = !on;
+    // svg에는 hidden 속성(property)이 없어서 .hidden = 로는 안 바뀐다. 속성을 직접 켜고 끈다
+    $("icoPlay").toggleAttribute("hidden", on); $("icoPause").toggleAttribute("hidden", !on);
     $("pPlay").setAttribute("aria-label", on ? "일시정지" : "재생");
   }
   function renderAll() { renderAccount(); renderStats(); renderTabs(); renderList(); renderLog(); renderPlayer(); }
